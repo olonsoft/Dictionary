@@ -292,7 +292,7 @@ class Dictionary {
 
 // ==== CONSTRUCTOR / DESTRUCTOR ==================================
 Dictionary::Dictionary(size_t init_size) {
-  iRoot = NULL;
+  iRoot = nullptr;
 
   // This is unlikely to fail as practically no memory is allocated by the NodeArray
   // All memory allocation is delegated to the first append
@@ -304,8 +304,8 @@ Dictionary::Dictionary(size_t init_size) {
   iKeyTemp = (char*) malloc(sizeof(char) * (_DICT_KEYLEN + 1));
   iValTemp = (char*) malloc(sizeof(char) * (_DICT_VALLEN + 1));
 #else
-  iKeyTemp = NULL;
-  iValTemp = NULL;
+  iKeyTemp = nullptr;
+  iValTemp = nullptr;
 #endif
 }
 
@@ -313,8 +313,8 @@ Dictionary::~Dictionary() {
   destroy();
   delete Q;
 #ifdef _DICT_COMPRESS
-  free(iKeyTemp); iKeyTemp = NULL;
-  free(iValTemp); iValTemp = NULL;
+  free(iKeyTemp); iKeyTemp = nullptr;
+  free(iValTemp); iValTemp = nullptr;
 #endif
 }
 
@@ -347,14 +347,14 @@ int8_t Dictionary::insert(const char* keystr, const char* valstr) {
 
   uintNN_t key = crc(iKeyTemp, iKeyLen);
 
-  if (iRoot != NULL)
+  if (iRoot != nullptr)
     return insert(key, iKeyTemp, iKeyLen, iValTemp, iValLen, iRoot);
   else {
     int8_t rc;
 
     iRoot = new node;
     if (!iRoot) return DICTIONARY_MEM;
-    rc = iRoot->create(iKeyTemp, iKeyLen, iValTemp, iValLen, NULL, NULL);
+    rc = iRoot->create(iKeyTemp, iKeyLen, iValTemp, iValLen, nullptr, nullptr);
 
 #ifdef _LIBDEBUG_
     Serial.printf("DICT-insert: creating root entry. rc = %d\n", rc);
@@ -448,7 +448,7 @@ String Dictionary::value(size_t i) {
 // ==== DELETES =====================================================
 void Dictionary::destroy() {
     destroy_tree(iRoot);
-    iRoot = NULL;
+    iRoot = nullptr;
     delete Q;
     Q = new NodeArray::NodeArray(initSize);
 }
@@ -694,14 +694,14 @@ bool Dictionary::operator == (Dictionary& b) {
 // ==== INSERTS ============================================================
 int8_t Dictionary::insert(uintNN_t key, const char* keystr, _DICT_KEY_TYPE keylen, const char* valstr, _DICT_VAL_TYPE vallen, node* leaf) {
     if (key < leaf->key()) {
-        if (leaf->left != NULL)
+        if (leaf->left != nullptr)
             return insert(key, keystr, keylen, valstr, vallen, leaf->left);
         else {
             int8_t rc;
 
             leaf->left = new node;
             if (!leaf->left) return DICTIONARY_MEM;
-            rc = leaf->left->create(keystr, keylen, valstr, vallen, NULL, NULL);
+            rc = leaf->left->create(keystr, keylen, valstr, vallen, nullptr, nullptr);
             if (rc) {
                 delete leaf->left;
                 return rc;
@@ -714,14 +714,14 @@ int8_t Dictionary::insert(uintNN_t key, const char* keystr, _DICT_KEY_TYPE keyle
         }
     }
     else if (key > leaf->key()) {
-        if (leaf->right != NULL)
+        if (leaf->right != nullptr)
             return insert(key, keystr, keylen, valstr, vallen, leaf->right);
         else {
             int8_t rc;
 
             leaf->right = new node;
             if (!leaf->right) return DICTIONARY_MEM;
-            rc = leaf->right->create(keystr, keylen, valstr, vallen, NULL, NULL);
+            rc = leaf->right->create(keystr, keylen, valstr, vallen, nullptr, nullptr);
             if (rc) {
                 delete leaf->right;
                 return rc;
@@ -741,14 +741,14 @@ int8_t Dictionary::insert(uintNN_t key, const char* keystr, _DICT_KEY_TYPE keyle
         else {
 
             if (cmpres < 0) {
-                if (leaf->left != NULL)
+                if (leaf->left != nullptr)
                     return insert(key, keystr, keylen, valstr, vallen, leaf->left);
                 else {
                     int8_t rc;
 
                     leaf->left = new node;
                     if (!leaf->left) return DICTIONARY_MEM;
-                    rc = leaf->left->create(keystr, keylen, valstr, vallen, NULL, NULL);
+                    rc = leaf->left->create(keystr, keylen, valstr, vallen, nullptr, nullptr);
                     if (rc) {
                         delete leaf->left;
                         return rc;
@@ -761,14 +761,14 @@ int8_t Dictionary::insert(uintNN_t key, const char* keystr, _DICT_KEY_TYPE keyle
                 }
             }
             else if (cmpres > 0) {
-                if (leaf->right != NULL)
+                if (leaf->right != nullptr)
                     return insert(key, keystr, keylen, valstr, vallen, leaf->right);
                 else {
                     int8_t rc;
 
                     leaf->right = new node;
                     if (!leaf->right) return DICTIONARY_MEM;
-                    rc = leaf->right->create(keystr, keylen, valstr, vallen, NULL, NULL);
+                    rc = leaf->right->create(keystr, keylen, valstr, vallen, nullptr, nullptr);
                     if (rc) {
                         delete leaf->right;
                         return rc;
@@ -788,7 +788,7 @@ int8_t Dictionary::insert(uintNN_t key, const char* keystr, _DICT_KEY_TYPE keyle
 
 // ==== SEARCH ===========================================================================
 node* Dictionary::search(uintNN_t key, node* leaf, const char* keystr, _DICT_KEY_TYPE keylen) {
-    if (leaf != NULL) {
+    if (leaf != nullptr) {
         if ( key == leaf->key() ) {
             int cmpres = keylen != leaf->ksize ? keylen - leaf->ksize : memcmp(leaf->keybuf, keystr, keylen);
 #ifdef _LIBDEBUG_
@@ -815,23 +815,23 @@ node* Dictionary::search(uintNN_t key, node* leaf, const char* keystr, _DICT_KEY
                 return search(key, leaf->right, keystr, keylen);
         }
     }
-    else return NULL;
+    else return nullptr;
 }
 
 
 // ==== DELETES ==========================================================================
 void Dictionary::destroy_tree(node* leaf) {
-  if (leaf != NULL) {
+  if (leaf != nullptr) {
     destroy_tree(leaf->left);
     destroy_tree(leaf->right);
     delete leaf; // node destructor takes care of the key and value strings
-    leaf = NULL;
+    leaf = nullptr;
   }
 }
 
 
 node* Dictionary::deleteNode(node* root, uintNN_t key, const char* keystr, _DICT_KEY_TYPE keylen) {
-  if (root == NULL) return root;
+  if (root == nullptr) return root;
 
   if (key < root->key() ) {
     root->left = deleteNode(root->left, key, keystr, keylen);
@@ -847,7 +847,7 @@ node* Dictionary::deleteNode(node* root, uintNN_t key, const char* keystr, _DICT
     int cmpres = (keylen != root->ksize) ? keylen - root->ksize : memcmp(root->keybuf, keystr, keylen);
     if (cmpres == 0 ) {
       // node with only one child or no child
-      if (root->left == NULL) {
+      if (root->left == nullptr) {
 #ifdef _LIBDEBUG_
         Serial.println("Replacing RIGHT node");
         printNode(root);
@@ -856,10 +856,10 @@ node* Dictionary::deleteNode(node* root, uintNN_t key, const char* keystr, _DICT
         node* temp = root->right;
         Q->remove(root);
         delete root;
-        root = NULL;
+        root = nullptr;
         return temp;
       }
-      else if (root->right == NULL) {
+      else if (root->right == nullptr) {
 #ifdef _LIBDEBUG_
         Serial.println("Replacing LEFT node");
         printNode(root);
@@ -868,7 +868,7 @@ node* Dictionary::deleteNode(node* root, uintNN_t key, const char* keystr, _DICT
         node* temp = root->left;
         Q->remove(root);
         delete root;
-        root = NULL;
+        root = nullptr;
         return temp;
       }
 
@@ -1019,7 +1019,7 @@ void Dictionary::decompressValue(const char* aBuf, _DICT_VAL_TYPE aLen) {
 // ==== DEBUG METHODS ===================================================
 #ifdef _LIBDEBUG_
 void Dictionary::printDictionary(node* root) {
-  if (root != NULL)
+  if (root != nullptr)
   {
     printDictionary(root->left);
     printNode(root);
@@ -1028,12 +1028,12 @@ void Dictionary::printDictionary(node* root) {
 }
 
 void Dictionary::printNode(node* root) {
-  if (root != NULL) {
+  if (root != nullptr) {
 //    Serial.printf("%u: (%u:%s,%s %u:%u) [l:%u, r:%u]\n", (uint32_t)root, root->key(), root->keybuf, root->valbuf, (uint32_t)root->keybuf, (uint32_t)root->valbuf, (uint32_t)root->left, (uint32_t)root->right);
     Serial.printf("%u: (%u:%u:%u) [l:%u, r:%u]\n", (uint32_t)root, root->key(), (uint32_t)root->keybuf, (uint32_t)root->valbuf, (uint32_t)root->left, (uint32_t)root->right);
   }
   else {
-    Serial.println("NULL:");
+    Serial.println("nullptr:");
   }
 }
 #endif

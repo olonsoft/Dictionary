@@ -42,7 +42,7 @@ class node {
 
     void* operator new(size_t size) {
 
-      void* p = NULL;
+      void* p = nullptr;
       if ( size ) {
 #if defined (ARDUINO_ARCH_ESP32) && defined(_DICT_USE_PSRAM)
         if (psramFound()) {
@@ -58,17 +58,17 @@ class node {
     }
 
     void operator delete(void* p) {
-      if ( p == NULL ) return;
+      if ( p == nullptr ) return;
       node* n = (node*)p;
 
       // Delete key/value strings
       if ( n->keybuf ) { 
         free(n->keybuf);
-        n->keybuf = NULL;
+        n->keybuf = nullptr;
       }
       if ( n->valbuf ) {
           free(n->valbuf);
-          n->valbuf = NULL;
+          n->valbuf = nullptr;
       }
       free(p);
 #ifdef _LIBDEBUG_
@@ -108,7 +108,7 @@ int8_t node::create(const char* aKey, _DICT_KEY_TYPE aKeySize, const char* aVal,
   ksize = aKeySize;
 
   // Now we will try to allocate memory to both char arrays
-  keybuf = NULL;
+  keybuf = nullptr;
 #if defined(ARDUINO_ARCH_ESP32) && defined(_DICT_USE_PSRAM)
   if (psramFound()) {
     keybuf = (char*)ps_malloc(ks + _DICT_EXTRA);
@@ -119,7 +119,7 @@ int8_t node::create(const char* aKey, _DICT_KEY_TYPE aKeySize, const char* aVal,
 
   if (!keybuf) return NODEARRAY_MEM;
 
-  valbuf = NULL;
+  valbuf = nullptr;
 #if defined(ARDUINO_ARCH_ESP32) && defined(_DICT_USE_PSRAM)
   if (psramFound()) {
     valbuf = (char*)ps_malloc(vsize + _DICT_EXTRA);
@@ -165,7 +165,7 @@ int8_t node::updateValue(const char* aVal, _DICT_VAL_TYPE aValSize) {
     return NODEARRAY_OK;
   }
 
-  char* temp = NULL;
+  char* temp = nullptr;
 #if defined(ARDUINO_ARCH_ESP32) && defined(_DICT_USE_PSRAM)
   if (psramFound()) {
     temp = (char*)ps_malloc(aValSize + _DICT_EXTRA);
@@ -212,7 +212,7 @@ int8_t node::updateKey(const char* aKey, _DICT_KEY_TYPE aKeySize) {
     return NODEARRAY_OK;
   }
   
-  char* temp = NULL;
+  char* temp = nullptr;
 #if defined(ARDUINO_ARCH_ESP32) && defined(_DICT_USE_PSRAM)
   if (psramFound()) {
     temp = (char*)ps_malloc(ks + _DICT_EXTRA);
@@ -294,7 +294,7 @@ class NodeArray {
     node* operator [] (const size_t i) {
       if (i >= items) {
         //        exit ("QUEUE: Out of bounds");
-        return NULL;
+        return nullptr;
       }
       return contents[i];
     }
@@ -327,7 +327,7 @@ NodeArray::NodeArray(size_t init_size) {
   tail = 0;       // set the tail of the queue to zero.
 
   initialSize = init_size;
-  contents = NULL;
+  contents = nullptr;
 
   // Let's not allocate memory in the constructor and delegate it to the
   // resize method, that could return something.
@@ -338,7 +338,7 @@ NodeArray::NodeArray(size_t init_size) {
 NodeArray::~NodeArray() {
   free(contents); // deallocate the array of the queue.
 
-  contents = NULL; // set queue's array pointer to nowhere.
+  contents = nullptr; // set queue's array pointer to nowhere.
 
   size = 0;        // set the size of queue to zero.
   items = 0;       // set the number of items of queue to zero.
@@ -352,7 +352,7 @@ int8_t NodeArray::resize(const size_t s) {
   //    exit ("QUEUE: error due to undesirable size for queue size.");
 
   // allocate enough memory for the temporary array.
-  node** temp = NULL;
+  node** temp = nullptr;
 #if defined(ARDUINO_ARCH_ESP32) && defined(_DICT_USE_PSRAM)
   if (psramFound()) {
     temp = (node**)ps_malloc(sizeof(node*) * s);
@@ -362,7 +362,7 @@ int8_t NodeArray::resize(const size_t s) {
     temp = (node**)malloc(sizeof(node*) * s);
 
   // if there is a memory allocation error.
-  if (temp == NULL) return NODEARRAY_MEM;
+  if (temp == nullptr) return NODEARRAY_MEM;
   //    exit ("QUEUE: insufficient memory to initialize temporary queue.");
 
   // copy the items from the old queue to the new one.
